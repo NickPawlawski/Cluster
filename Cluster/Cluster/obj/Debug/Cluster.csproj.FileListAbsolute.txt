@@ -1,0 +1,15 @@
+C:\Users\nicho\Documents\Cluster\Cluster\Cluster\bin\Debug\Cluster.exe.config
+C:\Users\nicho\Documents\Cluster\Cluster\Cluster\bin\Debug\Cluster.exe.manifest
+C:\Users\nicho\Documents\Cluster\Cluster\Cluster\bin\Debug\Cluster.application
+C:\Users\nicho\Documents\Cluster\Cluster\Cluster\bin\Debug\Cluster.exe
+C:\Users\nicho\Documents\Cluster\Cluster\Cluster\bin\Debug\Cluster.pdb
+C:\Users\nicho\Documents\Cluster\Cluster\Cluster\obj\Debug\Cluster.csprojResolveAssemblyReference.cache
+C:\Users\nicho\Documents\Cluster\Cluster\Cluster\obj\Debug\Cluster.Child.Child.resources
+C:\Users\nicho\Documents\Cluster\Cluster\Cluster\obj\Debug\Cluster.Parent.Parent.resources
+C:\Users\nicho\Documents\Cluster\Cluster\Cluster\obj\Debug\Cluster.Properties.Resources.resources
+C:\Users\nicho\Documents\Cluster\Cluster\Cluster\obj\Debug\Cluster.csproj.GenerateResource.Cache
+C:\Users\nicho\Documents\Cluster\Cluster\Cluster\obj\Debug\Cluster.csproj.CoreCompileInputs.cache
+C:\Users\nicho\Documents\Cluster\Cluster\Cluster\obj\Debug\Cluster.exe.manifest
+C:\Users\nicho\Documents\Cluster\Cluster\Cluster\obj\Debug\Cluster.application
+C:\Users\nicho\Documents\Cluster\Cluster\Cluster\obj\Debug\Cluster.exe
+C:\Users\nicho\Documents\Cluster\Cluster\Cluster\obj\Debug\Cluster.pdb
