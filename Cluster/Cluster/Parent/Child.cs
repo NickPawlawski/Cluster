@@ -1,26 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 namespace Cluster.Parent
 {
-    class Child
+    //Child class
+    internal class Child
     {
-        private int _id;
-        public int Id => _id;
+        //ID of the child
+        public int Id { get; }
 
-        private IPAddress _ip;
+        //IP of the child
+        public IPAddress IpAddress { get; }
 
-        public IPAddress Ip => _ip;
+        //If the child is currently running in the operation
+        public bool Running { get; private set; }
 
-        public Child(int id, IPAddress ip)
+        //Constructor of the child
+        public Child(int id,IPAddress ip)
         {
-            _id = id;
+            Id = id;
+            IpAddress = ip;
+        }
 
-            _ip = ip;
+        //Sets the running variable of the child
+        public void SetRunning(bool running)
+        {
+            Running = running;
         }
     }
 }

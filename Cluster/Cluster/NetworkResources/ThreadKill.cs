@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Cluster.NetworkResources
+﻿namespace Cluster.NetworkResources
 {
-    static class ThreadKill
+    internal static class ThreadKill
     {
-        private static bool threadKill = false;
-        public static bool ThreadKillFlag => threadKill;
+        public static bool ThreadKillFlag { get; private set; }
 
         public static void KillThread(bool status)
         {
-            threadKill = status;
+            ThreadKillFlag = status;
         }
     }
 }

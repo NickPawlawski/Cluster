@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-//HI
+
 namespace Cluster
 {
-    class SoftwareConfiguration
+    internal class SoftwareConfiguration
     {
         private static readonly Dictionary<string, Tuple<string, List<string>>> ConfiguratonDictionary = new Dictionary<string, Tuple<string, List<string>>>()
         {
             {"form",new Tuple<string, List<string>>("1",new List<string>{"0","1"})},
-            {"parentIP", new Tuple<string, List<string>>("141.218.147.125",new List<string>{"141.218.147.125"}) }
+            {"parentIP", new Tuple<string, List<string>>("10.80.147.211",new List<string>{"141.218.147.125","10.80.147.211"}) },
+            {"dchunk", new Tuple<string, List<string>>("1000000",new List<string>{"100000","1000000","10000000","100000000"}) }
         };
 
         public static int Form => int.Parse(ConfiguratonDictionary["form"].Item1);
-        public static string ParentIp => ConfiguratonDictionary["parentIP"].Item1;
+        public static IPAddress ParentIp => IPAddress.Parse(ConfiguratonDictionary["parentIP"].Item1);
+        public static int DChunk => int.Parse(ConfiguratonDictionary["dchunk"].Item1);
         public static int SetValue(string key, string value)
         {
             //No key found in possible config options

@@ -1,90 +1,87 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 
 namespace Cluster.NetworkResources
 {
-    internal class MessageSender
+    internal static class MessageSender
     {
-        private System.Net.IPAddress serverAddy;
-        private byte[] in_buffer = new byte[64];
-
-        public MessageSender() { }
-
-        public void SendMessage(String message)
+        //IP address for the messege
+        private static IPAddress _serverAddy;
+        
+        //Message sending method, string message and ip address for where to send it
+        public static void SendMessage(string message,IPAddress ipAddress)
         {
-            serverAddy = System.Net.IPAddress.Parse(SoftwareConfiguration.ParentIp);
-            int authPort = 12457;
-            string errMsg;
+            //Thread for sending message
+            var sendMessageThread = new Thread(() => ThreadSendMessage(message,ipAddress));
+            //Start thread
+            sendMessageThread.Start();
+        }
 
+        //Method for sending message
+        private static void ThreadSendMessage(string message,IPAddress ipAddress)
+        {
+            _serverAddy = ipAddress;
+
+            //Port number
+            int authPort = 12457;
+
+            //Socket 
             Socket soc = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            //Buffed message
             byte[] out_buffer = System.Text.Encoding.ASCII.GetBytes(message);
-            soc.SendTimeout = 20000;                 // 2 seconds to live - send/receive attempts
-
-
+            soc.SendTimeout = 2000;                 // 2 seconds to live - send attempts
+            
             try
             {
-                soc.Connect(serverAddy, authPort);  // create persistant connection
+                soc.Connect(_serverAddy, authPort);  // create persistant connection
                 soc.Send(out_buffer);               // send the encrypted creds (name/address parsing done server side
-
             }
-            catch (SocketException)                 //soc.connect fails, soc.send/receive times out
+            catch (SocketException e)                 //soc.connect fails, soc.send/receive times out
             {
                 soc.Close();                        // free the resource
-                errMsg = "Bad connection to remote server";
-
+                Reporter.WriteContent(e.ToString(), 1);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 soc.Close();                        // free the resource
-                errMsg = "Undefined Socket error: " + e.ToString();
-
+                Reporter.WriteContent(ex.ToString(), 1);
             }
 
             soc.Close();                             // free the resource
-            Console.WriteLine("Message sending complete");
+            
         }
 
-        public void SendMessageToSelf()
+        //Same thing as above but is hard coded to send a message to its self.
+        public static void SendMessageToSelf()
         {
-
-
-            serverAddy = System.Net.IPAddress.Parse(GetLocalIPAddress());
+            _serverAddy = System.Net.IPAddress.Parse(GetLocalIpAddress());
             int authPort = 12457;
-            string errMsg;
 
             Socket soc = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            byte[] out_buffer = System.Text.Encoding.ASCII.GetBytes("Test");
+            byte[] out_buffer = System.Text.Encoding.ASCII.GetBytes("51,Test");
             soc.SendTimeout = 20000;                 // 2 seconds to live - send/receive attempts
 
 
             try
             {
-                soc.Connect(serverAddy, authPort);  // create persistant connection
+                soc.Connect(_serverAddy, authPort);  // create persistant connection
                 soc.Send(out_buffer);               // send the encrypted creds (name/address parsing done server side
-
             }
             catch (SocketException)                 //soc.connect fails, soc.send/receive times out
             {
                 soc.Close();                        // free the resource
-                errMsg = "Bad connection to remote server";
-
             }
             catch (Exception e)
             {
                 soc.Close();                        // free the resource
-                errMsg = "Undefined Socket error: " + e.ToString();
-
             }
 
             soc.Close();                             // free the resource
-            Console.WriteLine("Message sending complete");
         }
 
-        private static string GetLocalIPAddress()
+        private static string GetLocalIpAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
             foreach (var ip in host.AddressList)

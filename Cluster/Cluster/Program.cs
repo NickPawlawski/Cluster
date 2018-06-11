@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Cluster.Child;
 
 namespace Cluster
 {
@@ -17,29 +13,25 @@ namespace Cluster
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
+            //Read the config
             ConfigReader.GetConfigReader();
-            //check
-            Update.Update ud = new Update.Update();
-
+            
+            //Switch on the form setting
             switch (SoftwareConfiguration.Form)
             {
+                //0 is the parent
                 case 0:
                     Application.Run(new Parent.Parent());
                     break;
+                //1 is the child
                 case 1:
                     Application.Run(new Child.Child());
                     break;
-                
+                //do the child by default
                 default:
                     Application.Run(new Child.Child());
                     break;
-
             }
-
-
-           
-            
         }
     }
 }

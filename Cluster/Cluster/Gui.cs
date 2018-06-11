@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace Cluster
 {
-    abstract class Gui
+    //Abstract class for each Gui
+    internal abstract class Gui
     {
+        //Array for all the controls
         public abstract Control[] GetControls();
-
-        protected Gui()
-        {
-            
-        }
-
-
+        //List of child controls for the parent
+        public abstract List<Control[]> GetChildControls();
+        //Method to set the log on the form
+        public abstract void SetLog();
     }
 }

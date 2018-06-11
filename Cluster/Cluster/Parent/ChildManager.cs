@@ -1,32 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Cluster.Parent
 {
-    class ChildManager
+    internal class ChildManager
     {
+        //Child dictionary with the IPaddress as the key for easy access
+        public Dictionary<IPAddress, Child> Children { get; } = new Dictionary<IPAddress, Child>();
 
-        public List<Child> Children => children;
-
-
-        private List<Child> children = new List<Child>();
-        private int total;
-        public ChildManager()
+        //Adds child to dictionary
+        public int AddChild(IPAddress ipAddress)
         {
-            
-        }
+            if (Children.ContainsKey(ipAddress)) return 1;
 
-        public void AddChild(IPAddress ipAddress)
-        {
-            total = children.Count;
+            Children.Add(ipAddress, new Child(Children.Count, ipAddress));
 
-            children.Add(new Child(total, ipAddress));
-
+            return 0;
         }
     }
 }

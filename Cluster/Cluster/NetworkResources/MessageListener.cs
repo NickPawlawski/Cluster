@@ -10,8 +10,6 @@ namespace Cluster.NetworkResources
 {
     internal class MessageListener
     {
-        
-
         private byte[] in_buffer = new byte[32];
 
         private bool killThread = false;
@@ -19,18 +17,17 @@ namespace Cluster.NetworkResources
         TcpListener listener;
         Thread listenThread;
 
-        public MessageListener( )
+        public MessageListener()
         {
-            CICOListener();
+            TcpListener();
         }
 
         public void KillThread()
         {
-            MessageSender ms = new MessageSender();
-
-            ms.SendMessageToSelf();
             
-            //listenThread.Abort();
+
+            MessageSender.SendMessageToSelf();
+            
             if (listenThread.Join(10000))
             {
                 //MessageBox.Show("join suc");
@@ -38,28 +35,33 @@ namespace Cluster.NetworkResources
             else
             {
                 //MessageBox.Show("join fail");
-                //listenThread.Abort();
             }
 
         }
 
-        private void CICOListener( )
+        private void TcpListener()
         {
             int port = 12457;
 
             listener = new TcpListener(IPAddress.Any, port);
-            listenThread = new Thread(new ThreadStart(Service));
+            listenThread = new Thread(Service);
             listenThread.Start();
         }
 
         private void Service()
         {
-            listener.Start();
+            try
+            {
+                listener.Start();
+            }
+            catch (Exception e)
+            {
+                
+            }
+            
             
             while (!killThread)
             {
-                
-               
                 try
                 {
                     TcpClient client = listener.AcceptTcpClient();
@@ -67,8 +69,7 @@ namespace Cluster.NetworkResources
                     StreamReader sr = new StreamReader(clientStream);
                     string split = sr.ReadToEnd();
                     MessageParser.ParseMessage(split);
-                    //MessageBox.Show("Message recieved: " + split[0]);
-                    //listenManager(split);
+                    
                 }
                 catch(Exception exception)
                 {
@@ -76,15 +77,7 @@ namespace Cluster.NetworkResources
                 }
 
                 killThread = ThreadKill.ThreadKillFlag;
-
-                Console.WriteLine("In thread: " + killThread);
             }
-            //MessageBox.Show("Thread is going to die");
-        }
-
-        private void listenManager(string[] message)
-        {
-
         }
     }
 }

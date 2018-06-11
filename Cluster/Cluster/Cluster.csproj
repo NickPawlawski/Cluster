@@ -19,7 +19,7 @@
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateEnabled>false</UpdateEnabled>
     <UpdateMode>Foreground</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
@@ -27,10 +27,11 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <UpdateUrl>http://ceas.wmich.edu/nickclusterproject/</UpdateUrl>
+    <PublisherName>Nick Pawlawski</PublisherName>
     <MinimumRequiredVersion>1.0.0.0</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>44</ApplicationRevision>
+    <ApplicationRevision>51</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -67,6 +68,18 @@
   <PropertyGroup>
     <SignManifests>true</SignManifests>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Cluster_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>Custom</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -87,6 +100,13 @@
     <Compile Include="Child\Child.Designer.cs">
       <DependentUpon>Child.cs</DependentUpon>
     </Compile>
+    <Compile Include="Child\GUI\ChildGui.cs" />
+    <Compile Include="Child\GUI\Connection.cs" />
+    <Compile Include="Child\Inst\Count.cs" />
+    <Compile Include="Child\Inst\Inst.cs" />
+    <Compile Include="Child\Inst\InstManager.cs" />
+    <Compile Include="Child\Inst\Output.cs" />
+    <Compile Include="Child\Inst\PiCount.cs" />
     <Compile Include="Gui.cs" />
     <Compile Include="NetworkResources\MessageListener.cs" />
     <Compile Include="NetworkResources\MessageParser.cs" />
@@ -96,6 +116,8 @@
     <Compile Include="Parent\Child.cs" />
     <Compile Include="Parent\ChildManager.cs" />
     <Compile Include="Parent\GUI\ParentGui.cs" />
+    <Compile Include="Parent\Operation\Operation.cs" />
+    <Compile Include="Parent\Operation\OperationManager.cs" />
     <Compile Include="Parent\Parent.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,8 +126,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reporter.cs" />
     <Compile Include="SoftwareConfiguration.cs" />
-    <Compile Include="Update\Update.cs" />
     <EmbeddedResource Include="Child\Child.resx">
       <DependentUpon>Child.cs</DependentUpon>
     </EmbeddedResource>
@@ -122,6 +144,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <None Include="Cluster_TemporaryKey.pfx" />
+    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

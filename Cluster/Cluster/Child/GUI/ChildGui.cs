@@ -2,123 +2,91 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using Cluster.NetworkResources;
-using Cluster.Parent.Operation;
 
-namespace Cluster.Parent.GUI
+namespace Cluster.Child.GUI
 {
-    internal class ParentGui : Gui
+    class ChildGui : Gui
     {
+        //Enumerations for the control objects
         public enum ControlEnums
         {
-            RefreshChildren = 0,
-            ChunkSize = 1,
-            Min = 2,
-            Max = 3,
-            Report = 4,
-            SetAll = 5,
-            ResetAll = 6
+            UpdateButton = 0,
+            RunButton = 1,
+            IdLabel = 2
         }
 
-        private readonly List<Control[]> _childList = new List<Control[]>();
+        //Text box for printing text to the screen
+        public TextBox GetTextBox { get; private set; }
 
+        //Groupbox object that contains the textbox
+        private GroupBox _messageBox;
+
+        //Main form
+        private readonly Form _mainForm;
+
+        //Array of controls for accessing in other classes
+        public Control[] UtilityControls { get; } = new Control[20];
+
+        //Empty control
+        private Control _control;
+
+        
+        //Groupbox containing all of the controls
+        private GroupBox _controlGroupBox;
+
+
+        //Constructor 
+        public ChildGui(Form mainForm)
+        {
+            _mainForm = mainForm;
+            CreateForm();
+        }
+
+        //overridden method used in another class
         public override List<Control[]> GetChildControls()
         {
-            return _childList;
+            return null;
         }
-        
-        public Control[] UtilityControls { get; } = new Control[20];
+
+        //Accessor for getting the controls 
         public override Control[] GetControls()
         {
             return UtilityControls;
         }
 
-        private readonly Form _mainForm;
-        private Control _control;
-
-        private GroupBox _controlBox;
-        private GroupBox _childBox;
-        private GroupBox _messageBox;
-
-        public TextBox GetTextBox { get; private set; }
-
-        public ParentGui(Form mainForm)
-        {
-            _mainForm = mainForm;
-            CreateForm();
-            
-        }
-
+        //Method for creating the form
         private void CreateForm()
         {
             _control = new Control();
-
+            
             _mainForm.BackColor = Color.FromArgb(68, 36, 22);
-
-            _mainForm.Size = new Size(1000, 700);
+            _mainForm.Size = new Size(518, 321);
 
             _control.Size = new Size((int)(_mainForm.Width * .005), (int)(_mainForm.Height * .005));
 
             CreateGroupBoxes();
-            CreateControlBox(_controlBox);
+            CreateControlButtons(_controlGroupBox);
             CreateListBox(_messageBox);
         }
 
+        //Creates the list box to display messages
         private void CreateListBox(Control parent)
         {
             var messageBox = CreateTextbox(parent, .95, .95, _control, _control, .01, .01);
             messageBox.BringToFront();
             messageBox.ReadOnly = true;
             messageBox.Multiline = true;
+            messageBox.ForeColor = Color.WhiteSmoke;
             messageBox.Font = new Font("Century Gothic", ReturnFontConvert(10));
             messageBox.BackColor = Color.FromArgb(68, 36, 22);
             messageBox.WordWrap = true;
             messageBox.ScrollBars = ScrollBars.Vertical;
             GetTextBox = messageBox;
         }
-
-        public void AddChild(Dictionary<IPAddress,Child> children)
-        {
-            _childBox.Controls.Clear();
-
-            _childList.Clear();
-
-            var vertControl = _control;
-
-            for (int i = 0; i < children.Count; i++)
-            {
-                if (_childList.Count > 0)
-                {
-                    vertControl = _childList.ElementAt(_childList.Count - 1)[0];
-                }
-                
-                var childControls = new Control[5];
-
-                var name = children.ElementAt(i).Key.ToString();
-                var button = CreateLabel(_childBox, .2, .2, _control, vertControl, .01, .01, Color.Black, name, new Font("Century Gothic", ReturnFontConvert(8)));
-                button.Tag = name;
-                childControls[0] = button;
-
-                var button2 = CreateButton(_childBox, .2, .2, button, vertControl, .01, .01, Color.WhiteSmoke,
-                    Color.Black, "Ready/Remove", new Font("Century Gothic", ReturnFontConvert(8)));
-                button2.Click += ReadyChild;
-                button2.Tag = name;
-                childControls[1] = button2;
-
-                var readyBox = CreatePictureBox(_childBox, .2, .2, button2, vertControl, .01, .01, Color.Red);
-                childControls[2] = readyBox;
-
-                var updateButton = CreateButton(_childBox, .2, .2, readyBox, vertControl, .01, .01, Color.WhiteSmoke,
-                    Color.Black, "Update", new Font("Century Gothic", ReturnFontConvert(8)));
-                childControls[3] = updateButton;
-                updateButton.Tag = name;
-                updateButton.Click += SendUpdate;
-                _childList.Add(childControls);
-            }
-        }
-
+        //Refreshes the log and displayes new messages
         public override void SetLog()
         {
             var frontEndLists = Reporter.FrontEndReport;
@@ -127,152 +95,52 @@ namespace Cluster.Parent.GUI
 
             itemBox.Text = "";
 
-            for (int i = frontEndLists.Count - 1; i > 0; i--)
+            for (int i = frontEndLists.Count-1; i > 0; i--)
             {
                 itemBox.Text += frontEndLists[i] + Environment.NewLine;
             }
-        }
-
-        private static void ReadyChild(object sender, EventArgs e)
-        {
-            Button b = (Button)sender;
-            IPAddress childIp = IPAddress.Parse(b.Tag.ToString());
-            MessageSender.SendMessage("1,1",childIp);
-        }
-
-
-        private void SendUpdate(object sender, EventArgs e)
-        {
-            Button b = (Button)sender;
             
-            MessageSender.SendMessage("50,", IPAddress.Parse(b.Tag.ToString()));
+            
         }
 
-        private void CreateControlBox(Control parent)
+        //Creates all of the buttons on the gui
+        private void CreateControlButtons(Control parent)
         {
-            var refreshChildrenButton = CreateButton(parent, .25, .45, _control, _control, .01, .01, Color.WhiteSmoke,
-                Color.Black, "Refresh Children", new Font("Century Gothic", ReturnFontConvert(8)));
-            refreshChildrenButton.BringToFront();
-            UtilityControls[(int)ControlEnums.RefreshChildren] = refreshChildrenButton;
+            var updateButton = CreateButton(parent, .25, .25, _control, _control, .01, .01, Color.WhiteSmoke,
+                Color.Black, "Update", new Font("Century Gothic", ReturnFontConvert(8)));
+            updateButton.BringToFront();
+            UtilityControls[(int) ControlEnums.UpdateButton] = updateButton;
 
-            var runButton = CreateButton(parent, .25, .45, refreshChildrenButton, _control, .01, .01, Color.WhiteSmoke,
+            var runButton = CreateButton(parent, .25, .25, _control, updateButton, .01, .01, Color.WhiteSmoke,
                 Color.Black, "Run", new Font("Century Gothic", ReturnFontConvert(8)));
-            runButton.Click += RunOperation;
+            runButton.BringToFront();
+            UtilityControls[(int) ControlEnums.RunButton] = runButton;
 
-            var chunkSizeLabel = CreateLabel(parent, .2, .2, runButton, _control, .01, .01, Color.WhiteSmoke,
-                "Chunk Size", new Font("Century Gothic", ReturnFontConvert(8)));
+            var idLabel = CreateLabel(parent, .2, .2, _control, runButton, .01, .01, Color.WhiteSmoke, "No Id Yet",
+                new Font("Century Gothic", ReturnFontConvert(8)));
+            UtilityControls[(int) ControlEnums.IdLabel] = idLabel;
 
-            var chunkSizeTextbox = CreateTextbox(parent, .2, .2, runButton, chunkSizeLabel, .01, .01);
-            chunkSizeTextbox.Font = new Font("Century Gothic", ReturnFontConvert(8));
-            UtilityControls[(int)ControlEnums.ChunkSize] = chunkSizeTextbox;
-
-            var minLabel = CreateLabel(parent, .2, .2, chunkSizeLabel, _control, .01, .01, Color.WhiteSmoke,
-                "Min", new Font("Century Gothic", ReturnFontConvert(8)));
-
-            var minTextbox = CreateTextbox(parent, .2, .2, chunkSizeLabel, minLabel, .01, .01);
-            UtilityControls[(int) ControlEnums.Min] = minTextbox;
-            minTextbox.Font = new Font("Century Gothic", ReturnFontConvert(8));
-            var maxLabel = CreateLabel(parent, .2, .2, chunkSizeLabel, minTextbox, .01, .01, Color.WhiteSmoke,
-                "Max", new Font("Century Gothic", ReturnFontConvert(8)));
-
-            var maxTextbox = CreateTextbox(parent, .2, .2, chunkSizeLabel, maxLabel, .01, .01);
-            UtilityControls[(int) ControlEnums.Max] = maxTextbox;
-            maxTextbox.Font = new Font("Century Gothic", ReturnFontConvert(8));
-
-            var reportButton = CreateButton(parent, .25, .45, _control, refreshChildrenButton, .01, .01, Color.WhiteSmoke,
-                Color.Black, "Report", new Font("Century Gothic", ReturnFontConvert(8)));
-            UtilityControls[(int)ControlEnums.Report] = reportButton;
-            reportButton.Click += PrintReport;
-
-            var setRunButton = CreateButton(parent, .25, .45, reportButton, runButton, .01, .01, Color.WhiteSmoke,
-                Color.Black, "Ready All", new Font("Century Gothic", ReturnFontConvert(8)));
-            UtilityControls[(int) ControlEnums.SetAll] = setRunButton;
-            setRunButton.Click += ReadyAll;
-
-            var resetButton = CreateButton(parent, .2, .45, setRunButton, runButton, .01, .01, Color.WhiteSmoke,
-                Color.Black, "Reset All", new Font("Century Gothic", ReturnFontConvert(8)));
-            UtilityControls[(int)ControlEnums.ResetAll] = resetButton;
-            resetButton.Click += ResetAll;
         }
 
-        private void ResetAll(object sender, EventArgs e)
-        {
-            foreach (var child in _childList)
-            {
-                Button b =(Button)child[1];
-                
-                IPAddress childIp = IPAddress.Parse(b.Tag.ToString());
-                
-                MessageSender.SendMessage("1,0", childIp);
-
-                child[2].BackColor = Color.Red;
-                
-            }
-            Button c = (Button) UtilityControls[(int) ControlEnums.RefreshChildren];
-            c.PerformClick();
-            OperationManager.ResetOperation();
-        }
-
-        private void ReadyAll(object sender, EventArgs e)
-        {
-            Button b;
-            foreach (Control[] t in _childList)
-            {
-                b = (Button)t[1];
-                b.PerformClick();
-            }
-        }
-
-        private static void PrintReport(object sender, EventArgs e)
-        {
-            var output = Operation.Operation.RealOutputDictionary.Values.ToArray();
-
-            var finalTotal = output.Aggregate<long, double>(0, (current, total) => current + total);
-
-            var est = finalTotal / (Operation.Operation.Size*output.Length) * 4;
-            MessageBox.Show(@"The Estimation calculated is: "+est,@"Pi Estimation");
-        }
-
-        private void RunOperation(object sender, EventArgs e)
-        {
-            long chunkSize;
-            long min;
-            long max;
-
-            try
-            {
-                chunkSize = long.Parse(UtilityControls[(int) ControlEnums.ChunkSize].Text);
-                min = long.Parse(UtilityControls[(int)ControlEnums.Min].Text);
-                max = long.Parse(UtilityControls[(int)ControlEnums.Max].Text);
-            }
-            catch (Exception)
-            {
-                MessageBox.Show(@"One of the text boxes does not have a valid value");
-                return;
-            }
-
-            OperationManager.StartOperation(min,max,chunkSize);
-        }
-
+        //Creates all of the groupboxes for the gui
         private void CreateGroupBoxes()
         {
-            var controlBox = CreateGroupBox(_mainForm, .95, .25, _control, _control, .01, .01, Color.FromArgb(191, 161, 99));
-            controlBox.BringToFront();
-            controlBox.Font = new Font("Century Gothic", ReturnFontConvert(1000));
-            _controlBox = controlBox;
+            var mainGroupBox = CreateGroupBox(_mainForm, .95, .5, _control, _control, .01, .01,
+                Color.FromArgb(68, 36, 22));
+            mainGroupBox.BringToFront();
+            mainGroupBox.Font = new Font("Century Gothic", ReturnFontConvert(1000));
+            _controlGroupBox = mainGroupBox;
 
-            var childBox = CreateGroupBox(_mainForm, .95, .3, _control, controlBox, .01, .01, Color.Gray);
-            childBox.BringToFront();
-            childBox.Font = new Font("Century Gothic", ReturnFontConvert(1000));
-            _childBox = childBox;
-
-            var messageBox = CreateGroupBox(_mainForm, .95, .35, _control, childBox, .01, .01,
+            var messageBox = CreateGroupBox(_mainForm, .95, .35, _control, mainGroupBox, .01, .01,
                 Color.FromArgb(191, 161, 99));
             messageBox.BringToFront();
             messageBox.Font = new Font("Century Gothic", ReturnFontConvert(1000));
             _messageBox = messageBox;
+
         }
-        
+
+
+        //Ignore this please. Its how the gui is built.
         #region Create objects
         private static Button CreateButton(Control parent, double width, double height, Control leftControl,
             Control aboveControl, double xPadding, double yPadding,
